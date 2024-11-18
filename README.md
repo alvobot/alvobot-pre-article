@@ -96,60 +96,58 @@ O **Alvobot Pre Article** automatiza a criação de páginas de pré-artigo para
 3. **Configuração Inicial**
    - Após a ativação, vá até **Configurações > Alvobot Pre Article** para configurar as opções do plugin.
 
-### Alternativas de Instalação
+### Instalação Manual
 
-#### Via Composer
+1. Baixe a última versão do plugin [aqui](https://github.com/alvobot/alvobot-pre-article/releases).
+2. Descompacte o arquivo na pasta `/wp-content/plugins/`.
+3. Ative o plugin no painel do WordPress.
 
-Se você prefere gerenciar dependências via Composer:
+---
 
-```bash
-composer require alvobot/alvobot-pre-article
+## ⚙️ Configuração
 
-Instalação Manual
+### Configurações Globais
 
-	1.	Baixe a última versão do plugin aqui.
-	2.	Descompacte o arquivo na pasta /wp-content/plugins/.
-	3.	Ative o plugin no painel do WordPress.
+1. Acesse **Configurações > Alvobot Pre Article** no painel do WordPress.
+2. Configure as opções padrão:
+   - **Textos dos CTAs**: Defina os textos padrão para os CTAs.
+   - **Cores dos Botões**: Escolha as cores padrão para os botões de CTA.
+   - **Posicionamento dos Anúncios**: Selecione onde os anúncios do AdSense serão exibidos.
+   - **Configurações do AdSense**: Insira seu código de AdSense para ativar a integração.
 
-⚙️ Configuração
+### Configurações por Post
 
-Configurações Globais
+1. Edite o post desejado.
+2. Localize a seção **Alvobot Pre Article** na página de edição.
+3. Marque a opção **Usar CTAs Personalizados**.
+4. Configure:
+   - **Texto do CTA**: Personalize o texto do botão de CTA.
+   - **Cor do Botão**: Escolha a cor específica para o CTA deste post.
+   - **Posição dos Anúncios**: Defina onde os anúncios serão exibidos nesta página de pré-artigo.
 
-	1.	Acesse Configurações > Alvobot Pre Article no painel do WordPress.
-	2.	Configure as opções padrão:
-	•	Textos dos CTAs: Defina os textos padrão para os CTAs.
-	•	Cores dos Botões: Escolha as cores padrão para os botões de CTA.
-	•	Posicionamento dos Anúncios: Selecione onde os anúncios do AdSense serão exibidos.
-	•	Configurações do AdSense: Insira seu código de AdSense para ativar a integração.
+---
 
-Configurações por Post
+## 📡 API REST
 
-	1.	Edite o post desejado.
-	2.	Localize a seção Alvobot Pre Article na página de edição.
-	3.	Marque a opção Usar CTAs Personalizados.
-	4.	Configure:
-	•	Texto do CTA: Personalize o texto do botão de CTA.
-	•	Cor do Botão: Escolha a cor específica para o CTA deste post.
-	•	Posição dos Anúncios: Defina onde os anúncios serão exibidos nesta página de pré-artigo.
+O **Alvobot Pre Article** oferece uma API REST completa para integração com outros sistemas.
 
-📡 API REST
+### Autenticação
 
-O Alvobot Pre Article oferece uma API REST completa para integração com outros sistemas.
+A API requer autenticação via **WordPress REST API Authentication**. Os usuários precisam ter a capacidade `edit_posts`.
 
-Autenticação
+### Endpoints Disponíveis
 
-A API requer autenticação via WordPress REST API Authentication. Os usuários precisam ter a capacidade edit_posts.
+#### Listar URLs de Pré-Artigos
 
-Endpoints Disponíveis
-
-Listar URLs de Pré-Artigos
-
+```http
 GET /wp-json/alvobot-pre-article/v1/pre-articles
+```
 
-Descrição: Retorna uma lista de todas as URLs de pré-artigos.
+**Descrição:** Retorna uma lista de todas as URLs de pré-artigos.
 
-Resposta:
+**Resposta:**
 
+```json
 [
   {
     "id": 123,
@@ -158,15 +156,19 @@ Resposta:
     "post_url": "https://seu-site.com/titulo-do-post"
   }
 ]
+```
 
-Obter CTAs de um Post
+#### Obter CTAs de um Post
 
+```http
 GET /wp-json/alvobot-pre-article/v1/posts/{post_id}/ctas
+```
 
-Descrição: Retorna as CTAs configuradas para um post específico.
+**Descrição:** Retorna as CTAs configuradas para um post específico.
 
-Resposta:
+**Resposta:**
 
+```json
 {
   "use_custom": true,
   "ctas": [
@@ -176,15 +178,19 @@ Resposta:
     }
   ]
 }
+```
 
-Atualizar CTAs de um Post
+#### Atualizar CTAs de um Post
 
+```http
 PUT /wp-json/alvobot-pre-article/v1/posts/{post_id}/ctas
+```
 
-Descrição: Atualiza as CTAs de um post específico.
+**Descrição:** Atualiza as CTAs de um post específico.
 
-Corpo da Requisição:
+**Corpo da Requisição:**
 
+```json
 {
   "use_custom": true,
   "ctas": [
@@ -194,258 +200,133 @@ Corpo da Requisição:
     }
   ]
 }
+```
 
-Resposta:
+**Resposta:**
 
+```json
 {
   "success": true,
   "message": "CTAs atualizadas com sucesso"
 }
+```
 
-Documentação Completa
+### Documentação Completa
 
-Para mais detalhes sobre a API, consulte o arquivo CHANGELOG.md.
+Para mais detalhes sobre a API, consulte o arquivo [CHANGELOG.md](CHANGELOG.md).
 
-💡 Exemplos de Uso
+---
 
-PHP
+## ❓ FAQ
 
-// Obtendo CTAs de um post
-$response = wp_remote_get(
-    rest_url('alvobot-pre-article/v1/posts/123/ctas'),
-    array(
-        'headers' => array(
-            'Authorization' => 'Basic ' . base64_encode('username:password')
-        )
-    )
-);
+### Como personalizar o template do pré-artigo?
 
-if (is_wp_error($response)) {
-    // Trate o erro
-} else {
-    $body = wp_remote_retrieve_body($response);
-    $ctas = json_decode($body, true);
-    // Use os CTAs conforme necessário
-}
+Crie um arquivo `template-pre-article.php` no diretório do seu tema para sobrescrever o template padrão fornecido pelo plugin.
 
-JavaScript
-
-// Atualizando CTAs de um post
-fetch('/wp-json/alvobot-pre-article/v1/posts/123/ctas', {
-    method: 'PUT',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-WP-Nonce': wpApiSettings.nonce
-    },
-    body: JSON.stringify({
-        use_custom: true,
-        ctas: [{
-            text: "Leia mais",
-            color: "#FF0000"
-        }]
-    })
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        console.log('CTAs atualizadas com sucesso');
-    } else {
-        console.error('Falha ao atualizar CTAs');
-    }
-})
-.catch(error => console.error('Erro:', error));
-
-🛠️ Desenvolvimento
-
-Requisitos
-
-	•	PHP: 7.4+
-	•	WordPress: 5.8+
-	•	Composer: (opcional, para gerenciamento de dependências)
-	•	Node.js: (para desenvolvimento frontend)
-
-Setup Local
-
-	1.	Clone o Repositório
-
-git clone https://github.com/alvobot/alvobot-pre-article.git
-cd alvobot-pre-article
-
-
-	2.	Instale as Dependências
-
-composer install
-npm install
-
-
-	3.	Build dos Assets
-
-npm run build
-
-
-	4.	Ative o Plugin no WordPress
-	•	Coloque a pasta alvobot-pre-article na diretoria /wp-content/plugins/ do seu ambiente WordPress.
-	•	Ative o plugin através do painel administrativo do WordPress.
-
-Estrutura do Projeto
-
-alvobot-pre-article/
-├── assets/
-│   ├── css/
-│   │   └── admin-style.css
-│   ├── js/
-│   │   └── admin-settings.js
-├── includes/
-│   ├── class-alvobot-pre-article.php
-│   └── class-alvobot-pre-article-updater.php
-├── templates/
-│   └── pre-article.php
-├── tests/
-│   └── ... (testes automatizados)
-├── composer.json
-├── package.json
-├── README.md
-├── CHANGELOG.md
-└── alvobot-pre-article.php
-
-Padrões de Código
-
-	•	Siga os Padrões de Código do WordPress.
-	•	Utilize PSR-4 para autoloading de classes.
-	•	Adote PHPDoc para documentação de funções e classes.
-
-Testes
-
-	•	Escreva testes automatizados para novas funcionalidades.
-	•	Utilize ferramentas como PHPUnit para testes unitários.
-	•	Assegure-se de que todas as funcionalidades principais estão cobertas por testes.
-
-Contribuindo
-
-	1.	Fork o Repositório
-	2.	Crie uma Branch para sua Feature
-
-git checkout -b minha-nova-feature
-
-
-	3.	Faça Commit das suas Alterações
-
-git commit -m "Descrição clara da feature"
-
-
-	4.	Push para o Fork
-
-git push origin minha-nova-feature
-
-
-	5.	Abra um Pull Request
-
-❓ FAQ
-
-Como personalizar o template do pré-artigo?
-
-Crie um arquivo template-pre-article.php no diretório do seu tema para sobrescrever o template padrão fornecido pelo plugin.
-
-Como funciona a integração com AdSense?
+### Como funciona a integração com AdSense?
 
 Insira seu código do AdSense nas configurações do plugin. Os anúncios serão exibidos automaticamente nas posições configuradas nas páginas de pré-artigo.
 
-O plugin é compatível com plugins de cache?
+### O plugin é compatível com plugins de cache?
 
-Sim, o Alvobot Pre Article é compatível com os principais plugins de cache do WordPress. Recomenda-se limpar o cache após alterações nas configurações do plugin.
+Sim, o **Alvobot Pre Article** é compatível com os principais plugins de cache do WordPress. Recomenda-se limpar o cache após alterações nas configurações do plugin.
 
-Posso usar múltiplos CTAs por pré-artigo?
+### Posso usar múltiplos CTAs por pré-artigo?
 
 Sim, o plugin suporta múltiplos CTAs por página de pré-artigo. Você pode configurar cada CTA individualmente nas configurações por post.
 
-A API REST do plugin é segura?
+### A API REST do plugin é segura?
 
-Sim, a API REST do plugin requer autenticação adequada e apenas usuários com a capacidade edit_posts podem acessar e modificar os dados através da API.
+Sim, a API REST do plugin requer autenticação adequada e apenas usuários com a capacidade `edit_posts` podem acessar e modificar os dados através da API.
 
-🤝 Contribuindo
+---
+
+## 🤝 Contribuindo
 
 Contribuições são sempre bem-vindas! Siga estas etapas para contribuir:
-	1.	Fork o Repositório
-	2.	Crie uma Branch para sua Feature ou Correção
-	3.	Faça Commit das suas Alterações
-	4.	Push para o Fork
-	5.	Abra um Pull Request
 
-Diretrizes de Contribuição
+1. **Fork o Repositório**
+2. **Crie uma Branch para sua Feature ou Correção**
+3. **Faça Commit das suas Alterações**
+4. **Push para o Fork**
+5. **Abra um Pull Request**
 
-	•	Siga os Padrões de Código do WordPress.
-	•	Adicione testes para novas funcionalidades.
-	•	Atualize a documentação conforme necessário.
-	•	Use Conventional Commits nas mensagens de commit.
-	•	Respeite as diretrizes de Código de Conduta.
+### Diretrizes de Contribuição
 
-📝 Changelog
+- Siga os [Padrões de Código do WordPress](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/).
+- Adicione testes para novas funcionalidades.
+- Atualize a documentação conforme necessário.
+- Use **Conventional Commits** nas mensagens de commit.
+- Respeite as diretrizes de [Código de Conduta](CODE_OF_CONDUCT.md).
 
-Confira o CHANGELOG.md para o histórico completo de alterações.
+---
 
-Últimas Versões
+## 📝 Changelog
 
-[1.3.0] - 2024-01-17
+Confira o [CHANGELOG.md](CHANGELOG.md) para o histórico completo de alterações.
 
-Adicionado
+### Últimas Versões
 
-	•	Novo endpoint REST API /wp-json/alvobot-pre-article/v1/pre-articles para listar todas as URLs de pré-artigos.
-	•	Schemas JSON para documentação e validação da API.
-	•	Arquivos separados para CSS e JavaScript:
-	•	assets/css/admin-style.css
-	•	assets/js/admin-settings.js
+#### [1.3.0] - 2024-01-17
 
-Alterado
+##### Adicionado
+- Novo endpoint REST API `/wp-json/alvobot-pre-article/v1/pre-articles` para listar todas as URLs de pré-artigos.
+- Schemas JSON para documentação e validação da API.
+- Arquivos separados para CSS e JavaScript:
+  - `assets/css/admin-style.css`
+  - `assets/js/admin-settings.js`
 
-	•	Padronização dos endpoints da REST API:
-	•	/ctas/{post_id} → /posts/{post_id}/ctas
-	•	Método POST alterado para PUT na atualização de CTAs.
-	•	Melhorias na validação de parâmetros da API.
-	•	Organização do código administrativo:
-	•	CSS e JavaScript movidos para arquivos dedicados.
-	•	Melhor estrutura de código.
+##### Alterado
+- Padronização dos endpoints da REST API:
+  - `/ctas/{post_id}` → `/posts/{post_id}/ctas`
+  - Método POST alterado para PUT na atualização de CTAs.
+- Melhorias na validação de parâmetros da API.
+- Organização do código administrativo:
+  - CSS e JavaScript movidos para arquivos dedicados.
+  - Melhor estrutura de código.
 
-Removido
+##### Removido
+- Método não utilizado `get_plugin_info()`.
+- CSS e JavaScript inline do painel administrativo.
 
-	•	Método não utilizado get_plugin_info().
-	•	CSS e JavaScript inline do painel administrativo.
+#### [1.2.0] - 2024-11-17
 
-[1.2.0] - 2024-11-17
+##### Adicionado
+- Atualização automática via GitHub.
+- Sistema de changelog.
+- Melhorias na interface de administração.
+- Suporte a múltiplos CTAs por artigo.
+- Integração com Google AdSense.
 
-Adicionado
+##### Alterado
+- Atualização da estrutura do plugin.
+- Melhorias de performance.
+- Otimização do código.
 
-	•	Atualização automática via GitHub.
-	•	Sistema de changelog.
-	•	Melhorias na interface de administração.
-	•	Suporte a múltiplos CTAs por artigo.
-	•	Integração com Google AdSense.
+#### [1.1.0] - 2024-06-01
 
-Alterado
+##### Adicionado
+- Personalização de CTAs por post.
+- Melhorias na interface do usuário.
 
-	•	Atualização da estrutura do plugin.
-	•	Melhorias de performance.
-	•	Otimização do código.
+##### Alterado
+- Lançamento inicial.
 
-[1.1.0] - 2024-06-01
+---
 
-Adicionado
+## 📄 Licença
 
-	•	Personalização de CTAs por post.
-	•	Melhorias na interface do usuário.
+Este projeto está licenciado sob a [GPL v2 ou posterior](http://www.gnu.org/licenses/gpl-2.0.html). Veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-Alterado
+---
 
-	•	Lançamento inicial.
+## 💪 Suporte
 
-📄 Licença
+- 📚 [Documentação](https://github.com/alvobot/alvobot-pre-article/wiki)
+- 🐛 [Issues](https://github.com/alvobot/alvobot-pre-article/issues)
+- 💬 [Fórum de Suporte no WordPress](https://wordpress.org/support/plugin/alvobot-pre-article)
+- ✉️ [Contato](mailto:support@alvobot.com)
 
-Este projeto está licenciado sob a GPL v2 ou posterior. Veja o arquivo LICENSE para detalhes.
+---
 
-💪 Suporte
-
-	•	📚 Documentação
-	•	🐛 Issues
-	•	💬 Fórum de Suporte no WordPress
-	•	✉️ Contato
-
-Desenvolvido com ❤️ por Alvobot
+Desenvolvido com ❤️ por [Alvobot](https://github.com/alvobot)
