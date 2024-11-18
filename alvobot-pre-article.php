@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Alvobot Pré-artigo
- * Description: Gera páginas "Pré-artigo" dinâmicas para cada post existente.
- * Version: 1.2.0
+ * Plugin Name: Alvobot Pre Article
+ * Description: Gere páginas de pré-artigo automaticamente para seus posts existentes.
+ * Version: 1.3.0
  * Author: Alvobot - Cris Franklin
  * Author URI: https://github.com/alvobot
  * Plugin URI: https://github.com/alvobot/alvobot-pre-article

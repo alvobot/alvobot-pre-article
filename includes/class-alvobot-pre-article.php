@@ -204,119 +204,12 @@ class Alvobot_Pre_Artigo {
             </form>
         </div>
 
-        <style>
-        .card {
-            background: #fff;
-            border: 1px solid #ccd0d4;
-            border-radius: 4px;
-            margin-top: 20px;
-            padding: 20px;
-            box-shadow: 0 1px 1px rgba(0,0,0,.04);
-        }
-        .card h2 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .ctas-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .cta-box {
-            background: #f9f9f9;
-            border: 1px solid #e5e5e5;
-            border-radius: 4px;
-            padding: 15px;
-        }
-        .cta-box h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .cta-field {
-            margin-bottom: 15px;
-        }
-        .cta-field label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        .adsense-field {
-            margin-top: 15px;
-        }
-        .adsense-field label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        </style>
-
         <script>
-        jQuery(document).ready(function($) {
-            // Function to generate random hex color
-            function getRandomColor() {
-                const letters = '0123456789ABCDEF';
-                let color = '#';
-                for (let i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                }
-                return color;
-            }
-
-            // Function to create new CTA box
-            function createCTABox(index) {
-                const randomColor = getRandomColor();
-                return `
-                    <div class="cta-box">
-                        <h3><?php _e('CTA', 'alvobot-pre-artigo'); ?> ${index}</h3>
-                        <div class="cta-field">
-                            <label><?php _e('Texto do Botão:', 'alvobot-pre-artigo'); ?></label>
-                            <input 
-                                type="text" 
-                                name="alvobot_pre_artigo_options[button_text_${index}]" 
-                                value="" 
-                                class="regular-text"
-                            />
-                        </div>
-                        <div class="cta-field">
-                            <label><?php _e('Cor do Botão:', 'alvobot-pre-artigo'); ?></label>
-                            <input 
-                                type="text" 
-                                name="alvobot_pre_artigo_options[button_color_${index}]" 
-                                value="${randomColor}" 
-                                class="wp-color-picker-field" 
-                                data-default-color="${randomColor}" 
-                            />
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Handle CTA quantity changes
-            $('#num_ctas').on('input', function() {
-                const numCTAs = parseInt($(this).val()) || 0;
-                const container = $('#ctas_container');
-                const currentCTAs = container.children('.cta-box').length;
-
-                if (numCTAs > currentCTAs) {
-                    // Add new CTA boxes
-                    for (let i = currentCTAs + 1; i <= numCTAs; i++) {
-                        const newCTA = $(createCTABox(i));
-                        container.append(newCTA);
-                        // Initialize color picker for new elements
-                        newCTA.find('.wp-color-picker-field').wpColorPicker();
-                    }
-                } else if (numCTAs < currentCTAs) {
-                    // Remove excess CTA boxes
-                    container.children('.cta-box').slice(numCTAs).remove();
-                }
-            });
-
-            // Initialize existing color pickers
-            $('.wp-color-picker-field').wpColorPicker();
-        });
+        var alvobotTranslations = {
+            cta: '<?php echo esc_js(__('CTA', 'alvobot-pre-artigo')); ?>',
+            buttonText: '<?php echo esc_js(__('Texto do Botão:', 'alvobot-pre-artigo')); ?>',
+            buttonColor: '<?php echo esc_js(__('Cor do Botão:', 'alvobot-pre-artigo')); ?>'
+        };
         </script>
         <?php
     }    
@@ -559,10 +452,18 @@ class Alvobot_Pre_Artigo {
             // Enfileira o color picker
             wp_enqueue_style('wp-color-picker');
             wp_enqueue_script('wp-color-picker');
-            // Enfileira o script personalizado para inicializar o color picker
+            
+            // Enfileira os estilos e scripts personalizados
+            wp_enqueue_style(
+                'alvobot-pre-artigo-admin-style',
+                plugin_dir_url(dirname(__FILE__)) . 'assets/css/admin-style.css',
+                [],
+                '1.0.0'
+            );
+            
             wp_enqueue_script(
-                'alvobot-pre-artigo-admin-script',
-                plugin_dir_url(dirname(__FILE__)) . 'assets/js/admin-script.js',
+                'alvobot-pre-artigo-admin-settings',
+                plugin_dir_url(dirname(__FILE__)) . 'assets/js/admin-settings.js',
                 ['jquery', 'wp-color-picker'],
                 '1.0.0',
                 true
@@ -574,31 +475,151 @@ class Alvobot_Pre_Artigo {
      * Registra as rotas da REST API
      */
     public function register_rest_routes() {
-        register_rest_route('alvobot-pre-article/v1', '/ctas/(?P<post_id>\d+)', [
+        // Rota para listar todas as URLs dos pré-artigos
+        register_rest_route('alvobot-pre-article/v1', '/pre-articles', [
+            'methods' => 'GET',
+            'callback' => [$this, 'list_pre_article_urls'],
+            'permission_callback' => [$this, 'check_rest_permission'],
+            'schema' => [$this, 'get_pre_articles_schema']
+        ]);
+
+        // Rota para obter CTAs de um post específico
+        register_rest_route('alvobot-pre-article/v1', '/posts/(?P<post_id>\d+)/ctas', [
             'methods' => 'GET',
             'callback' => [$this, 'get_post_ctas'],
             'permission_callback' => [$this, 'check_rest_permission'],
             'args' => [
                 'post_id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'description' => 'ID do post',
                     'validate_callback' => function($param) {
-                        return is_numeric($param);
+                        return is_numeric($param) && $param > 0;
                     }
                 ]
-            ]
+            ],
+            'schema' => [$this, 'get_ctas_schema']
         ]);
 
-        register_rest_route('alvobot-pre-article/v1', '/ctas/(?P<post_id>\d+)', [
-            'methods' => 'POST',
+        // Rota para atualizar CTAs de um post específico
+        register_rest_route('alvobot-pre-article/v1', '/posts/(?P<post_id>\d+)/ctas', [
+            'methods' => 'PUT',
             'callback' => [$this, 'update_post_ctas'],
             'permission_callback' => [$this, 'check_rest_permission'],
             'args' => [
                 'post_id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'description' => 'ID do post',
                     'validate_callback' => function($param) {
-                        return is_numeric($param);
+                        return is_numeric($param) && $param > 0;
                     }
                 ]
-            ]
+            ],
+            'schema' => [$this, 'get_ctas_schema']
         ]);
+    }
+
+    /**
+     * Schema para a rota de pré-artigos
+     */
+    public function get_pre_articles_schema() {
+        return [
+            '$schema' => 'http://json-schema.org/draft-04/schema#',
+            'title' => 'pre-article',
+            'type' => 'object',
+            'properties' => [
+                'id' => [
+                    'description' => 'ID do post',
+                    'type' => 'integer',
+                    'context' => ['view']
+                ],
+                'title' => [
+                    'description' => 'Título do post',
+                    'type' => 'string',
+                    'context' => ['view']
+                ],
+                'pre_article_url' => [
+                    'description' => 'URL da página de pré-artigo',
+                    'type' => 'string',
+                    'format' => 'uri',
+                    'context' => ['view']
+                ],
+                'post_url' => [
+                    'description' => 'URL do post original',
+                    'type' => 'string',
+                    'format' => 'uri',
+                    'context' => ['view']
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Schema para a rota de CTAs
+     */
+    public function get_ctas_schema() {
+        return [
+            '$schema' => 'http://json-schema.org/draft-04/schema#',
+            'title' => 'ctas',
+            'type' => 'object',
+            'properties' => [
+                'use_custom' => [
+                    'description' => 'Se está usando configurações personalizadas',
+                    'type' => 'boolean',
+                    'context' => ['view', 'edit']
+                ],
+                'ctas' => [
+                    'description' => 'Lista de CTAs',
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'text' => [
+                                'description' => 'Texto do botão CTA',
+                                'type' => 'string',
+                                'context' => ['view', 'edit']
+                            ],
+                            'color' => [
+                                'description' => 'Cor do botão CTA',
+                                'type' => 'string',
+                                'pattern' => '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                                'context' => ['view', 'edit']
+                            ]
+                        ]
+                    ],
+                    'context' => ['view', 'edit']
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Lista todas as URLs das páginas de pré-artigo
+     */
+    public function list_pre_article_urls() {
+        // Busca todos os posts publicados
+        $posts = get_posts([
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'fields' => 'ids'
+        ]);
+
+        $urls = [];
+        foreach ($posts as $post_id) {
+            $post = get_post($post_id);
+            if ($post) {
+                $urls[] = [
+                    'id' => $post_id,
+                    'title' => get_the_title($post_id),
+                    'pre_article_url' => home_url('pre/' . $post->post_name),
+                    'post_url' => get_permalink($post_id)
+                ];
+            }
+        }
+
+        return rest_ensure_response($urls);
     }
 
     /**
