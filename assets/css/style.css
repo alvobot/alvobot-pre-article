@@ -1,0 +1,207 @@
+/* Estilos Globais */
+:root {
+    --primary-color: #007BFF;
+    --primary-color-dark: #0069D9;
+    --font-family: 'Arial', sans-serif;
+    --transition-duration: 0.2s;
+    --transition-ease: ease-in-out;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+}
+
+/* Wrapper Principal */
+.pre-article-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Cabeçalho */
+.pre-article-header {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.pre-article-header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.pre-article-header img {
+    max-width: 200px;
+    height: auto;
+}
+
+/* Conteúdo */
+.pre-article-content {
+    flex: 1;
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.pre-article-content h2 {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Primeira e Segunda Parte do Conteúdo */
+.excerpt, .excerpt-continuation {
+    font-size: 18px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 30px !important;
+    text-align: left !important;
+}
+
+.excerpt p, .excerpt-continuation p {
+    margin: 0 0 1em 0;
+}
+
+.excerpt a.continue-reading, .excerpt-continuation a.continue-reading {
+    display: inline !important;
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+    font-size: 18px !important;
+    transition: color var(--transition-duration) var(--transition-ease) !important;
+    white-space: nowrap !important;
+}
+
+.excerpt a.continue-reading:hover, .excerpt-continuation a.continue-reading:hover {
+    text-decoration: underline !important;
+    color: var(--primary-color-dark) !important;
+}
+
+/* Impedir quebra de linha antes do '...continue' */
+.excerpt, .excerpt-continuation {
+    word-break: break-word;
+}
+
+.excerpt a.continue-reading, .excerpt-continuation a.continue-reading {
+    display: inline;
+}
+
+/* CTAs */
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+.cta-button {
+    padding: 15px 25px;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    display: block;
+    text-align: center;
+    transition: transform var(--transition-duration) var(--transition-ease);
+}
+
+.cta-button:hover {
+    transform: scale(1.05);
+    color: #fff;
+}
+
+/* Rodapé */
+.pre-article-footer {
+    text-align: center;
+    font-size: 14px;
+    padding: 20px 0;
+    background-color: #f1f1f1;
+    border-top: 1px solid #ddd;
+}
+
+.pre-article-footer .footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.pre-article-footer .copyright {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.pre-article-footer .legal {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.pre-article-footer .footer-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-duration) var(--transition-ease);
+}
+
+.pre-article-footer .footer-link:hover {
+    text-decoration: underline;
+    color: var(--primary-color-dark);
+}
+
+.footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-menu li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.footer-menu a {
+    text-decoration: none;
+    color: #000;
+    transition: color var(--transition-duration) var(--transition-ease);
+}
+
+.footer-menu a:hover {
+    text-decoration: underline;
+    color: var(--primary-color);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .cta-button {
+        width: 100%;
+    }
+
+    .pre-article-footer {
+        font-size: 12px;
+        padding: 15px 0;
+    }
+
+    .pre-article-footer .legal {
+        font-size: 11px;
+    }
+}
+
+/* Garante que o último parágrafo não tenha margem inferior */
+.excerpt p:last-child, .excerpt-continuation p:last-child {
+    display: inline !important;
+    margin-bottom: 0 !important;
+}
+
+/* Bloco de Anúncios */
+.adsense-block {
+    margin: 30px 0;
+    text-align: center;
+    min-height: 90px;
+}
+
+@media (max-width: 600px) {
+    .adsense-block {
+        margin: 20px 0;
+    }
+}
