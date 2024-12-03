@@ -1,11 +1,12 @@
 # Changelog
 
-## [1.4.6] - 2024-12-03
+## [1.4.6] - 2024-01-03
 
 ### Melhorado
-- Simplificado o sistema de atualizações usando Plugin Update Checker
-- Melhorada a integração com releases do GitHub
-- Corrigido problema na detecção de novas versões
+- Atualizado sistema de atualizações para usar Plugin Update Checker 5.5
+- Melhorada integração com releases do GitHub
+- Adicionado botão de verificação manual de atualizações
+- Corrigido problemas na detecção de novas versões
 
 ## [1.4.5] - 2024-12-03
 
