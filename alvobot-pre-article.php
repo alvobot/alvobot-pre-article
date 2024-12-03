@@ -24,7 +24,7 @@ define('ALVOBOT_PRE_ARTICLE_FILE', __FILE__);
 define('ALVOBOT_PRE_ARTICLE_PATH', plugin_dir_path(__FILE__));
 
 // Carrega o Plugin Update Checker primeiro
-require_once ALVOBOT_PRE_ARTICLE_PATH . 'includes/lib/plugin-update-checker/plugin-update-checker.php';
+require_once ALVOBOT_PRE_ARTICLE_PATH . 'includes/dependencies/plugin-update-checker/plugin-update-checker.php';
 
 // Carrega as classes do plugin
 require_once ALVOBOT_PRE_ARTICLE_PATH . 'includes/class-alvobot-pre-article.php';
