@@ -96,23 +96,36 @@ class Alvobot_Pre_Article_Updater {
             }
         }
 
-        $response = wp_remote_get('https://api.github.com/repos/alvobot/alvobot-pre-article/releases/latest');
+        $response = wp_remote_get('https://api.github.com/repos/alvobot/alvobot-pre-article/releases');
         
         if (is_wp_error($response)) {
             return false;
         }
 
-        $data = json_decode(wp_remote_retrieve_body($response), true);
+        $releases = json_decode(wp_remote_retrieve_body($response), true);
         
-        if (empty($data)) {
+        if (empty($releases) || !is_array($releases)) {
+            return false;
+        }
+
+        // Pega o release mais recente que não seja um pre-release
+        $latest_release = null;
+        foreach ($releases as $release) {
+            if (!$release['prerelease']) {
+                $latest_release = $release;
+                break;
+            }
+        }
+
+        if (!$latest_release) {
             return false;
         }
 
         if ($this->cache_allowed) {
-            set_transient('alvobot_pre_article_github_data', $data, 12 * HOUR_IN_SECONDS);
+            set_transient('alvobot_pre_article_github_data', $latest_release, 12 * HOUR_IN_SECONDS);
         }
 
-        return $data;
+        return $latest_release;
     }
 
     private function get_remote_version() {
@@ -128,5 +141,9 @@ class Alvobot_Pre_Article_Updater {
             'https://github.com/alvobot/alvobot-pre-article/archive/refs/tags/v%s.zip',
             ltrim($version, 'v')
         );
+    }
+
+    public function clear_cache() {
+        delete_transient('alvobot_pre_article_github_data');
     }
 }
