@@ -150,31 +150,43 @@ function alvobot_upgrader_source_selection($source, $remote_source, $upgrader, $
         return $source;
     }
 
-    // Obtém o nome do diretório atual
-    $source_files = glob($source . '/*');
-    if (empty($source_files)) {
-        alvobot_log('Erro: Diretório fonte vazio');
-        return $source;
+    // Define o nome do diretório de destino
+    $target_directory = trailingslashit($remote_source) . 'alvobot-pre-article';
+    
+    // Se o diretório de destino já existe, remove-o
+    if ($wp_filesystem->exists($target_directory)) {
+        $wp_filesystem->delete($target_directory, true);
     }
-
-    // Se houver apenas um diretório e for o diretório do plugin
-    if (count($source_files) === 1 && is_dir($source_files[0])) {
-        $inner_directory = $source_files[0];
-        $inner_files = glob($inner_directory . '/*');
-        
-        // Move todos os arquivos do diretório interno para o diretório pai
-        foreach ($inner_files as $file) {
-            $filename = basename($file);
-            rename($file, $source . '/' . $filename);
+    
+    // Cria o novo diretório
+    $wp_filesystem->mkdir($target_directory);
+    
+    // Lista todos os arquivos no diretório fonte
+    $files = $wp_filesystem->dirlist($source);
+    
+    // Se houver apenas uma pasta (que é o caso do GitHub), use-a como fonte
+    $subdirs = array_filter($files, function($file) {
+        return $file['type'] === 'd';
+    });
+    
+    if (count($subdirs) === 1) {
+        $github_dir = trailingslashit($source) . key($subdirs);
+        $source = $github_dir;
+    }
+    
+    // Move todos os arquivos para o novo diretório
+    $upgrader->move_files($source, $target_directory);
+    
+    // Se o diretório original ainda existe e está vazio, remove-o
+    if ($wp_filesystem->exists($source)) {
+        $remaining_files = $wp_filesystem->dirlist($source);
+        if (empty($remaining_files)) {
+            $wp_filesystem->delete($source, true);
         }
-        
-        // Remove o diretório vazio
-        rmdir($inner_directory);
-        
-        alvobot_log('Arquivos movidos do diretório interno para:', $source);
     }
-
-    return $source;
+    
+    alvobot_log('Arquivos movidos para:', $target_directory);
+    return $target_directory;
 }
 
 /**
@@ -185,8 +197,12 @@ function alvobot_after_update($upgrader_object, $options) {
         if (isset($options['plugins'])) {
             foreach ($options['plugins'] as $plugin) {
                 if ($plugin === ALVOBOT_PRE_ARTICLE_BASENAME) {
-                    delete_site_transient('update_plugins');
+                    // Força recarregamento dos plugins
                     wp_clean_plugins_cache(true);
+                    // Limpa o cache de atualizações
+                    delete_site_transient('update_plugins');
+                    // Recarrega a lista de plugins
+                    wp_update_plugins();
                     break;
                 }
             }
