@@ -19,7 +19,8 @@ error_log
 access_log
 
 # Dependency directories
-/vendor/
+/vendor/*
+!/vendor/plugin-update-checker/
 /node_modules/
 
 # Build directories

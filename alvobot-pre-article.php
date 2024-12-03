@@ -3,43 +3,37 @@
  * Plugin Name: Alvobot Pre Article
  * Plugin URI: https://github.com/alvobot/alvobot-pre-article
  * Description: Gere páginas de pré-artigo automaticamente para seus posts existentes.
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: Alvobot - Cris Franklin
  * Author URI: https://github.com/alvobot
  * Text Domain: alvobot-pre-artigo
- * Requires at least: 5.8
- * Requires PHP: 7.4
- * License: GPL v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-declare(strict_types=1);
-
-if (!defined('ABSPATH')) {
-    exit; // Evita acesso direto
+if (!defined('WPINC')) {
+    die;
 }
 
-// Inclui as classes do plugin
 require_once plugin_dir_path(__FILE__) . 'includes/class-alvobot-pre-article.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-alvobot-pre-article-updater.php';
 
-// Inicializa o plugin
+// Carrega o Plugin Update Checker
+require_once plugin_dir_path(__FILE__) . 'vendor/plugin-update-checker/plugin-update-checker.php';
+
 function run_alvobot_pre_artigo() {
-    // Inicializa o plugin principal
-    $plugin = new Alvobot_Pre_Artigo();
+    $plugin = new Alvobot_Pre_Article();
     $plugin->run();
 
-    // Inicializa o atualizador
-    $updater = new Alvobot_Pre_Article_Updater(__FILE__);
+    // Configura o atualizador
+    if (class_exists('Puc_v4_Factory')) {
+        $updateChecker = Puc_v4_Factory::buildUpdateChecker(
+            'https://api.github.com/repos/alvobot/alvobot-pre-article/releases',
+            __FILE__,
+            'alvobot-pre-article'
+        );
 
-    // Limpa o cache do updater na ativação do plugin
-    register_activation_hook(__FILE__, function() use ($updater) {
-        $updater->clear_cache();
-    });
-
-    if (is_admin()) {
-        // Não há necessidade de fazer nada aqui, pois o updater já foi instanciado acima
+        // Configura para usar releases do GitHub
+        $updateChecker->getVcsApi()->enableReleaseAssets();
+        $updateChecker->setAuthentication(''); // Remove autenticação para repos públicos
     }
 }
 
-add_action('plugins_loaded', 'run_alvobot_pre_artigo');
+run_alvobot_pre_artigo();

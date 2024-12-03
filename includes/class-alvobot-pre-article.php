@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-class Alvobot_Pre_Artigo {
+/**
+ * A classe principal do plugin
+ */
+class Alvobot_Pre_Article {
 
     public function run() {
         // Registra as regras de reescrita de URL
