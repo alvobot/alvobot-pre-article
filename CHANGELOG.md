@@ -5,6 +5,7 @@
 ### Corrigido
 - Removido botão duplicado de verificação de atualizações
 - Melhorada interface de atualização do plugin
+- Corrigido problema com diretório vendor movendo Plugin Update Checker para includes/lib
 
 ## [1.4.6] - 2024-01-03
 
