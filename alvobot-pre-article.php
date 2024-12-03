@@ -3,7 +3,7 @@
  * Plugin Name: Alvobot Pre Article
  * Plugin URI: https://github.com/alvobot/alvobot-pre-article
  * Description: Gere páginas de pré-artigo automaticamente para seus posts existentes.
- * Version: 1.4.10
+ * Version: 1.4.11
  * Author: Alvobot - Cris Franklin
  * Author URI: https://github.com/alvobot
  * Text Domain: alvobot-pre-artigo
@@ -19,12 +19,9 @@ if (!defined('WPINC')) {
 }
 
 // Define constantes do plugin
-define('ALVOBOT_PRE_ARTICLE_VERSION', '1.4.10');
+define('ALVOBOT_PRE_ARTICLE_VERSION', '1.4.11');
 define('ALVOBOT_PRE_ARTICLE_FILE', __FILE__);
 define('ALVOBOT_PRE_ARTICLE_PATH', plugin_dir_path(__FILE__));
-
-// Carrega o Plugin Update Checker primeiro
-require_once ALVOBOT_PRE_ARTICLE_PATH . 'includes/dependencies/plugin-update-checker/plugin-update-checker.php';
 
 // Carrega as classes do plugin
 require_once ALVOBOT_PRE_ARTICLE_PATH . 'includes/class-alvobot-pre-article.php';
@@ -38,11 +35,34 @@ function run_alvobot_pre_artigo(): void {
     $plugin = new Alvobot_Pre_Article();
     $plugin->run();
 
-    // Inicializa o sistema de atualizações apenas no admin
+    // Adiciona verificação de atualização
     if (is_admin()) {
-        new Alvobot_Pre_Article_Github_Updater(ALVOBOT_PRE_ARTICLE_FILE);
+        add_action('admin_init', 'check_for_plugin_update');
     }
 }
 
 // Inicia o plugin quando o WordPress carregar
 add_action('plugins_loaded', 'run_alvobot_pre_artigo');
+
+/**
+ * Verifica se há uma nova versão do plugin disponível
+ */
+function check_for_plugin_update() {
+    $current_version = ALVOBOT_PRE_ARTICLE_VERSION;
+    $repo_url = 'https://api.github.com/repos/alvobot/alvobot-pre-article/releases/latest';
+
+    $response = wp_remote_get($repo_url);
+    if (is_wp_error($response)) {
+        return;
+    }
+
+    $release_info = json_decode(wp_remote_retrieve_body($response), true);
+    if (version_compare($current_version, $release_info['tag_name'], '<')) {
+        // Nova versão disponível
+        add_action('admin_notices', function() use ($release_info) {
+            echo '<div class="notice notice-warning is-dismissible">
+                <p>Uma nova versão do Alvobot Pre Article está disponível. <a href="' . esc_url($release_info['html_url']) . '">Clique aqui para atualizar</a>.</p>
+            </div>';
+        });
+    }
+}
