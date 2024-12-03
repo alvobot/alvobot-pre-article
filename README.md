@@ -1,6 +1,6 @@
 # Alvobot Pre Article
 
-[![Version](https://img.shields.io/badge/version-1.4.11-blue.svg)](https://github.com/alvobot/alvobot-pre-article/releases)
+[![Version](https://img.shields.io/badge/version-1.4.12-blue.svg)](https://github.com/alvobot/alvobot-pre-article/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-green.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://www.php.net)
 [![License](https://img.shields.io/badge/license-GPL%20v2-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
@@ -266,6 +266,11 @@ Contribuições são sempre bem-vindas! Siga estas etapas para contribuir:
 Confira o [CHANGELOG.md](CHANGELOG.md) para o histórico completo de alterações.
 
 ### Últimas Versões
+
+#### [1.4.12] - 2024-01-03
+- Implementação de sistema de atualização personalizada
+- Adicionado botão de verificação manual de atualizações
+- Removido Plugin Update Checker
 
 #### [1.4.11] - 2024-01-03
 - Implementação de sistema de atualização personalizada

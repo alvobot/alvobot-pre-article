@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.12] - 2024-01-03
+
+### Melhorado
+- Implementação de sistema de atualização personalizada
+- Adicionado botão de verificação manual de atualizações
+- Removido Plugin Update Checker
+
 ## [1.4.11] - 2024-01-03
 
 ### Melhorado
