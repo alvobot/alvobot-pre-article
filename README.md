@@ -1,6 +1,6 @@
 # Alvobot Pre Article
 
-[![Version](https://img.shields.io/badge/version-1.4.9-blue.svg)](https://github.com/alvobot/alvobot-pre-article/releases)
+[![Version](https://img.shields.io/badge/version-1.4.10-blue.svg)](https://github.com/alvobot/alvobot-pre-article/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-green.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://www.php.net)
 [![License](https://img.shields.io/badge/license-GPL%20v2-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
@@ -266,6 +266,10 @@ Contribuições são sempre bem-vindas! Siga estas etapas para contribuir:
 Confira o [CHANGELOG.md](CHANGELOG.md) para o histórico completo de alterações.
 
 ### Últimas Versões
+
+#### [1.4.10] - 2024-01-03
+- Garantida inclusão do Plugin Update Checker no ZIP automático do GitHub
+- Estrutura de diretórios de dependências revisada
 
 #### [1.4.9] - 2024-01-03
 - Atualizado sistema de atualizações para usar diretório includes/lib

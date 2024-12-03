@@ -3,7 +3,7 @@
  * Plugin Name: Alvobot Pre Article
  * Plugin URI: https://github.com/alvobot/alvobot-pre-article
  * Description: Gere páginas de pré-artigo automaticamente para seus posts existentes.
- * Version: 1.4.9
+ * Version: 1.4.10
  * Author: Alvobot - Cris Franklin
  * Author URI: https://github.com/alvobot
  * Text Domain: alvobot-pre-artigo
@@ -19,7 +19,7 @@ if (!defined('WPINC')) {
 }
 
 // Define constantes do plugin
-define('ALVOBOT_PRE_ARTICLE_VERSION', '1.4.9');
+define('ALVOBOT_PRE_ARTICLE_VERSION', '1.4.10');
 define('ALVOBOT_PRE_ARTICLE_FILE', __FILE__);
 define('ALVOBOT_PRE_ARTICLE_PATH', plugin_dir_path(__FILE__));
 

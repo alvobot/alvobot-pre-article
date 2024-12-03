@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.10] - 2024-01-03
+
+### Melhorado
+- Garantida inclusão do Plugin Update Checker no ZIP automático do GitHub
+- Estrutura de diretórios de dependências revisada
+
 ## [1.4.9] - 2024-01-03
 
 ### Melhorado
