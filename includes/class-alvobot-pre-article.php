@@ -36,7 +36,7 @@ class Alvobot_Pre_Artigo {
         register_deactivation_hook(__FILE__, [$this, 'flush_rewrite_rules']);
 
         // Adiciona o botão de verificar atualizações
-        add_filter('plugin_action_links', [$this, 'adicionar_botao_verificar_atualizacao'], 10, 2);
+        add_filter('plugin_action_links_alvobot-pre-article/alvobot-pre-article.php', [$this, 'adicionar_botao_verificar_atualizacao'], 10, 2);
         add_action('admin_init', [$this, 'processar_verificacao_manual']);
         add_action('admin_notices', [$this, 'exibir_mensagem_verificacao']);
     }
@@ -708,24 +708,23 @@ class Alvobot_Pre_Artigo {
      * @return array
      */
     public function adicionar_botao_verificar_atualizacao($actions, $plugin_file) {
-        if (plugin_basename(ALVOBOT_PRE_ARTICLE_FILE) === $plugin_file) {
-            $check_update_url = wp_nonce_url(
-                add_query_arg(
-                    array(
-                        'alvobot_check_update' => '1',
-                        'plugin' => $plugin_file,
-                    ),
-                    admin_url('plugins.php')
+        $check_update_url = wp_nonce_url(
+            add_query_arg(
+                array(
+                    'alvobot_check_update' => '1',
+                    'plugin' => $plugin_file,
                 ),
-                'check-update-' . $plugin_file
-            );
-            
-            $actions['check_update'] = sprintf(
-                '<a href="%s">%s</a>',
-                esc_url($check_update_url),
-                __('Verificar Atualização', 'alvobot-pre-article')
-            );
-        }
+                admin_url('plugins.php')
+            ),
+            'check-update-' . $plugin_file
+        );
+        
+        $actions['check_update'] = sprintf(
+            '<a href="%s">%s</a>',
+            esc_url($check_update_url),
+            __('Verificar Atualização', 'alvobot-pre-article')
+        );
+
         return $actions;
     }
 
