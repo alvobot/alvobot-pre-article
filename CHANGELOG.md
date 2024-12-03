@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.9] - 2024-01-03
+
+### Melhorado
+- Atualizado sistema de atualizações para usar diretório includes/lib
+- Garantida compatibilidade com atualizações via GitHub
+- Melhorada estrutura de arquivos do plugin
+
 ## [1.4.7] - 2024-01-03
 
 ### Corrigido
