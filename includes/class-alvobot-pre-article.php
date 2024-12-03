@@ -34,6 +34,11 @@ class Alvobot_Pre_Artigo {
         register_activation_hook(__FILE__, [$this, 'flush_rewrite_rules']);
         // Reescreve as regras ao desativar o plugin
         register_deactivation_hook(__FILE__, [$this, 'flush_rewrite_rules']);
+
+        // Adiciona o botão de verificar atualizações
+        add_filter('plugin_action_links', [$this, 'adicionar_botao_verificar_atualizacao'], 10, 2);
+        add_action('admin_init', [$this, 'processar_verificacao_manual']);
+        add_action('admin_notices', [$this, 'exibir_mensagem_verificacao']);
     }
 
     public function register_rewrite_rules() {
@@ -693,5 +698,67 @@ class Alvobot_Pre_Artigo {
 
     public function flush_rewrite_rules() {
         flush_rewrite_rules();
+    }
+
+    /**
+     * Adiciona o botão de verificar atualizações na lista de plugins
+     *
+     * @param array  $actions     Array de ações do plugin
+     * @param string $plugin_file Caminho do arquivo do plugin
+     * @return array
+     */
+    public function adicionar_botao_verificar_atualizacao($actions, $plugin_file) {
+        if (plugin_basename(ALVOBOT_PRE_ARTICLE_FILE) === $plugin_file) {
+            $check_update_url = wp_nonce_url(
+                add_query_arg(
+                    array(
+                        'alvobot_check_update' => '1',
+                        'plugin' => $plugin_file,
+                    ),
+                    admin_url('plugins.php')
+                ),
+                'check-update-' . $plugin_file
+            );
+            
+            $actions['check_update'] = sprintf(
+                '<a href="%s">%s</a>',
+                esc_url($check_update_url),
+                __('Verificar Atualização', 'alvobot-pre-article')
+            );
+        }
+        return $actions;
+    }
+
+    /**
+     * Processa a verificação manual de atualização
+     */
+    public function processar_verificacao_manual() {
+        if (!isset($_GET['alvobot_check_update']) || !isset($_GET['plugin'])) {
+            return;
+        }
+
+        if (!current_user_can('update_plugins')) {
+            wp_die(__('Você não tem permissão para realizar esta ação.', 'alvobot-pre-article'));
+        }
+
+        $plugin_file = sanitize_text_field($_GET['plugin']);
+        check_admin_referer('check-update-' . $plugin_file);
+
+        delete_site_transient('update_plugins');
+        wp_update_plugins();
+
+        wp_redirect(admin_url('plugins.php?update-check=true'));
+        exit;
+    }
+
+    /**
+     * Exibe mensagem após verificação de atualização
+     */
+    public function exibir_mensagem_verificacao() {
+        if (isset($_GET['update-check']) && $_GET['update-check'] === 'true') {
+            echo '<div class="notice notice-success is-dismissible"><p>' . 
+                __('Verificação de atualização concluída.', 'alvobot-pre-article') . 
+                '</p></div>';
+        }
     }
 }

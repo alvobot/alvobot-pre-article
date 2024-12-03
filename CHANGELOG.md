@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.0] - 2024-01-09
+
+### Adicionado
+- Novo botão "Verificar Atualização" na lista de plugins para verificação manual de atualizações
+- Sistema de verificação automática de atualizações via GitHub
+- Integração com a API do GitHub para atualizações automáticas
+
+### Melhorado
+- Atualização da descrição do plugin
+- Documentação do código
+
 ## [1.3.0] - 2024-01-17
 
 ### Adicionado
