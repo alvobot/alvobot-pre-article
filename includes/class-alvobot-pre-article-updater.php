@@ -65,8 +65,9 @@ class Alvobot_Pre_Article_Updater {
             $transient = new stdClass;
         }
 
+        // Sempre inicializar checked se não existir
         if (!isset($transient->checked)) {
-            return $transient;
+            $transient->checked = [];
         }
 
         $this->get_repository_info();
@@ -78,18 +79,29 @@ class Alvobot_Pre_Article_Updater {
         $current_version = $this->plugin['Version'] ?? '0.0.0';
         $remote_version = ltrim($this->github_response->tag_name, 'v');
 
+        // Adiciona a versão atual ao checked
+        $transient->checked[$this->basename] = $current_version;
+
         if (version_compare($remote_version, $current_version, '>')) {
             $plugin = [
-                'url' => $this->plugin['PluginURI'] ?? '',
+                'id' => $this->basename,
                 'slug' => dirname($this->basename),
-                'package' => $this->github_response->zipball_url,
+                'plugin' => $this->basename,
                 'new_version' => $remote_version,
+                'url' => $this->plugin['PluginURI'] ?? '',
+                'package' => $this->github_response->zipball_url,
+                'icons' => [],
+                'banners' => [],
+                'banners_rtl' => [],
                 'tested' => '6.4.2',
                 'requires' => '5.8',
                 'requires_php' => '7.4'
             ];
 
             $transient->response[$this->basename] = (object) $plugin;
+        } else {
+            // Se não houver atualização, remova da lista de respostas
+            unset($transient->response[$this->basename]);
         }
 
         return $transient;
@@ -112,9 +124,11 @@ class Alvobot_Pre_Article_Updater {
 
         $plugin = [
             'name'              => $this->plugin['Name'],
-            'slug'              => $this->basename,
+            'slug'              => dirname($this->basename),
+            'plugin'            => $this->basename,
             'version'           => ltrim($this->github_response->tag_name, 'v'),
             'author'            => $this->plugin['Author'],
+            'author_profile'    => $this->plugin['AuthorURI'] ?? '',
             'last_updated'      => $this->github_response->published_at,
             'homepage'          => $this->plugin['PluginURI'] ?? '',
             'short_description' => $this->plugin['Description'],
@@ -128,6 +142,15 @@ class Alvobot_Pre_Article_Updater {
             'tested'            => '6.4.2',
             'requires_php'      => '7.4',
             'compatibility'     => [],
+            'rating'           => 0,
+            'num_ratings'      => 0,
+            'support_threads'  => 0,
+            'support_threads_resolved' => 0,
+            'active_installs'  => 0,
+            'downloaded'       => 0,
+            'last_updated'     => $this->github_response->published_at,
+            'added'            => $this->github_response->published_at,
+            'tags'            => []
         ];
 
         return (object) $plugin;
