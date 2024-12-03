@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4] - 2024-12-03
+
+### Corrigido
+- Corrigido erro fatal ao carregar o plugin devido à função `is_plugin_active()`
+- Corrigido tipo da propriedade `$active` no updater para aceitar valor booleano
+- Melhorada a inicialização do sistema de atualizações
+
 ## [1.4.0] - 2024-01-09
 
 ### Adicionado
