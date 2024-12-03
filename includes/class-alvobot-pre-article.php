@@ -32,16 +32,6 @@ class Alvobot_Pre_Article {
 
         // Registra endpoints da REST API
         add_action('rest_api_init', [$this, 'register_rest_routes']);
-
-        // Reescreve as regras ao ativar o plugin
-        register_activation_hook(__FILE__, [$this, 'flush_rewrite_rules']);
-        // Reescreve as regras ao desativar o plugin
-        register_deactivation_hook(__FILE__, [$this, 'flush_rewrite_rules']);
-
-        // Adiciona o botão de verificar atualizações
-        add_filter('plugin_action_links_alvobot-pre-article/alvobot-pre-article.php', [$this, 'adicionar_botao_verificar_atualizacao'], 10, 2);
-        add_action('admin_init', [$this, 'processar_verificacao_manual']);
-        add_action('admin_notices', [$this, 'exibir_mensagem_verificacao']);
     }
 
     public function register_rewrite_rules() {
@@ -699,10 +689,6 @@ class Alvobot_Pre_Article {
         ]);
     }
 
-    public function flush_rewrite_rules() {
-        flush_rewrite_rules();
-    }
-
     /**
      * Adiciona o botão de verificar atualizações na lista de plugins
      *
@@ -740,7 +726,7 @@ class Alvobot_Pre_Article {
         }
 
         if (!current_user_can('update_plugins')) {
-            wp_die(__('Você não tem permissão para realizar esta ação.', 'alvobot-pre-article'));
+            wp_die(__('Você não tem permissão para realizar esta ação.', 'alvobot-pre-artigo'));
         }
 
         $plugin_file = sanitize_text_field($_GET['plugin']);
@@ -759,7 +745,7 @@ class Alvobot_Pre_Article {
     public function exibir_mensagem_verificacao() {
         if (isset($_GET['update-check']) && $_GET['update-check'] === 'true') {
             echo '<div class="notice notice-success is-dismissible"><p>' . 
-                __('Verificação de atualização concluída.', 'alvobot-pre-article') . 
+                __('Verificação de atualização concluída.', 'alvobot-pre-artigo') . 
                 '</p></div>';
         }
     }
