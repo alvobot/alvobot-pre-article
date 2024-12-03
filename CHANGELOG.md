@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5] - 2024-12-03
+
+### Corrigido
+- Corrigido problema na detecção de novas versões do plugin
+- Melhorado sistema de cache para atualizações
+- Adicionada limpeza automática de cache na ativação do plugin
+
 ## [1.4.4] - 2024-12-03
 
 ### Corrigido
