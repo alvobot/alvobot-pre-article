@@ -1,6 +1,6 @@
-# 🚀 Alvobot Pre Article
+# Alvobot Pre Article
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/alvobot/alvobot-pre-article/releases)
+[![Version](https://img.shields.io/badge/version-1.4.7-blue.svg)](https://github.com/alvobot/alvobot-pre-article/releases)
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-green.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://www.php.net)
 [![License](https://img.shields.io/badge/license-GPL%20v2-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
@@ -12,40 +12,40 @@ O **Alvobot Pre Article** é um plugin WordPress que gera automaticamente págin
 
 ---
 
-## 📋 Índice
+## Índice
 
-- [📢 Visão Geral](#-visão-geral)
-- [✨ Recursos](#-recursos)
-- [🔧 Instalação](#-instalação)
-- [⚙️ Configuração](#️-configuração)
-- [📡 API REST](#-api-rest)
-- [💡 Exemplos de Uso](#-exemplos-de-uso)
-- [🛠️ Desenvolvimento](#-desenvolvimento)
-- [❓ FAQ](#-faq)
-- [🤝 Contribuindo](#-contribuindo)
-- [📝 Changelog](#-changelog)
-- [📄 Licença](#-licença)
-- [💪 Suporte](#-suporte)
+- [Visão Geral](#-visão-geral)
+- [Recursos](#-recursos)
+- [Instalação](#-instalação)
+- [Configuração](#️-configuração)
+- [API REST](#-api-rest)
+- [Exemplos de Uso](#-exemplos-de-uso)
+- [Desenvolvimento](#-desenvolvimento)
+- [FAQ](#-faq)
+- [Contribuindo](#-contribuindo)
+- [Changelog](#-changelog)
+- [Licença](#-licença)
+- [Suporte](#-suporte)
 
 ---
 
-## 📢 Visão Geral
+## Visão Geral
 
 O **Alvobot Pre Article** automatiza a criação de páginas de pré-artigo para cada post existente no seu site WordPress. Estas páginas são projetadas para atrair leitores e direcioná-los para o conteúdo completo através de CTAs estrategicamente posicionados.
 
 ### Principais Funcionalidades
 
-- ✅ **Geração Automática**: Cria páginas de pré-artigo automaticamente para todos os posts existentes.
-- ✅ **CTAs Personalizáveis**: Configure CTAs individuais por post com textos e cores personalizáveis.
-- ✅ **Integração com Google AdSense**: Exiba anúncios de forma otimizada nas páginas de pré-artigo.
-- ✅ **API REST Completa**: Integre com outros sistemas facilmente através da API REST fornecida.
-- ✅ **Interface Administrativa Intuitiva**: Gerencie todas as configurações de forma fácil e rápida.
-- ✅ **Sistema de Templates Responsivo**: Garanta que suas páginas de pré-artigo fiquem ótimas em qualquer dispositivo.
-- ✅ **Atualizações Automáticas via GitHub**: Mantenha seu plugin sempre atualizado com as últimas versões.
+- **Geração Automática**: Cria páginas de pré-artigo automaticamente para todos os posts existentes.
+- **CTAs Personalizáveis**: Configure CTAs individuais por post com textos e cores personalizáveis.
+- **Integração com Google AdSense**: Exiba anúncios de forma otimizada nas páginas de pré-artigo.
+- **API REST Completa**: Integre com outros sistemas facilmente através da API REST fornecida.
+- **Interface Administrativa Intuitiva**: Gerencie todas as configurações de forma fácil e rápida.
+- **Sistema de Templates Responsivo**: Garanta que suas páginas de pré-artigo fiquem ótimas em qualquer dispositivo.
+- **Atualizações Automáticas via GitHub**: Mantenha seu plugin sempre atualizado com as últimas versões.
 
 ---
 
-## ✨ Recursos
+## Recursos
 
 ### Geração Automática de Pré-Artigos
 
@@ -75,7 +75,7 @@ O **Alvobot Pre Article** automatiza a criação de páginas de pré-artigo para
 
 ---
 
-## 🔧 Instalação
+## Instalação
 
 ### Requisitos
 
@@ -104,7 +104,7 @@ O **Alvobot Pre Article** automatiza a criação de páginas de pré-artigo para
 
 ---
 
-## ⚙️ Configuração
+## Configuração
 
 ### Configurações Globais
 
@@ -127,7 +127,7 @@ O **Alvobot Pre Article** automatiza a criação de páginas de pré-artigo para
 
 ---
 
-## 📡 API REST
+## API REST
 
 O **Alvobot Pre Article** oferece uma API REST completa para integração com outros sistemas.
 
@@ -217,7 +217,7 @@ Para mais detalhes sobre a API, consulte o arquivo [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 ### Como personalizar o template do pré-artigo?
 
@@ -241,7 +241,7 @@ Sim, a API REST do plugin requer autenticação adequada e apenas usuários com 
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Contribuições são sempre bem-vindas! Siga estas etapas para contribuir:
 
@@ -261,71 +261,61 @@ Contribuições são sempre bem-vindas! Siga estas etapas para contribuir:
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 Confira o [CHANGELOG.md](CHANGELOG.md) para o histórico completo de alterações.
 
 ### Últimas Versões
 
-#### [1.3.0] - 2024-01-17
+#### [1.4.7] - 2024-01-03
+- Removido botão duplicado de verificação de atualizações
+- Melhorada interface de atualização do plugin
 
-##### Adicionado
+#### [1.4.6] - 2024-01-03
+- Atualizado sistema de atualizações para usar Plugin Update Checker 5.5
+- Melhorada integração com releases do GitHub
+- Adicionado botão de verificação manual de atualizações
+- Corrigido problemas na detecção de novas versões
+
+#### [1.4.5] - 2024-01-03
+- Corrigido sistema de atualizações automáticas
+- Melhorada integração com GitHub releases
+
+#### [1.3.0] - 2024-01-17
 - Novo endpoint REST API `/wp-json/alvobot-pre-article/v1/pre-articles` para listar todas as URLs de pré-artigos.
 - Schemas JSON para documentação e validação da API.
 - Arquivos separados para CSS e JavaScript:
   - `assets/css/admin-style.css`
   - `assets/js/admin-settings.js`
 
-##### Alterado
-- Padronização dos endpoints da REST API:
-  - `/ctas/{post_id}` → `/posts/{post_id}/ctas`
-  - Método POST alterado para PUT na atualização de CTAs.
-- Melhorias na validação de parâmetros da API.
-- Organização do código administrativo:
-  - CSS e JavaScript movidos para arquivos dedicados.
-  - Melhor estrutura de código.
-
-##### Removido
-- Método não utilizado `get_plugin_info()`.
-- CSS e JavaScript inline do painel administrativo.
-
 #### [1.2.0] - 2024-11-17
-
-##### Adicionado
 - Atualização automática via GitHub.
 - Sistema de changelog.
 - Melhorias na interface de administração.
 - Suporte a múltiplos CTAs por artigo.
 - Integração com Google AdSense.
 
-##### Alterado
-- Atualização da estrutura do plugin.
-- Melhorias de performance.
-- Otimização do código.
-
 #### [1.1.0] - 2024-06-01
-
-##### Adicionado
 - Personalização de CTAs por post.
 - Melhorias na interface do usuário.
 
-##### Alterado
+#### [1.0.0] - 2024-06-01
 - Lançamento inicial.
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto está licenciado sob a [GPL v2 ou posterior](http://www.gnu.org/licenses/gpl-2.0.html). Veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
 
-## 💪 Suporte
+## Suporte
 
-- 📚 [Documentação](https://github.com/alvobot/alvobot-pre-article/wiki)
-- 🐛 [Issues](https://github.com/alvobot/alvobot-pre-article/issues)
-- 💬 [Fórum de Suporte no WordPress](https://wordpress.org/support/plugin/alvobot-pre-article)
-- ✉️ [Contato](mailto:support@alvobot.com)
+- [Documentação](https://github.com/alvobot/alvobot-pre-article/wiki)
+- [Issues](https://github.com/alvobot/alvobot-pre-article/issues)
+- [Fórum de Suporte no WordPress](https://wordpress.org/support/plugin/alvobot-pre-article)
+- [Contato](mailto:support@alvobot.com)
 
 ---
 

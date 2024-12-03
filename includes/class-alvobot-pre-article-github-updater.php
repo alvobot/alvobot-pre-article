@@ -68,6 +68,10 @@ class Alvobot_Pre_Article_Github_Updater {
         // Remove autenticação para repos públicos
         $this->update_checker->setAuthentication('');
 
+        // Desabilita o botão padrão de verificação
+        $this->update_checker->setOption('enable-auto-updates', false);
+        $this->update_checker->setOption('manual-check-link', false);
+
         // Adiciona hooks do WordPress
         $this->add_hooks();
     }

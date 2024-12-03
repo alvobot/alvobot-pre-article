@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.7] - 2024-01-03
+
+### Corrigido
+- Removido botão duplicado de verificação de atualizações
+- Melhorada interface de atualização do plugin
+
 ## [1.4.6] - 2024-01-03
 
 ### Melhorado
