@@ -4,110 +4,60 @@ declare(strict_types=1);
 
 class Alvobot_Pre_Article_Updater {
     private string $file;
-    private array $plugin;
+    private string $plugin;
     private string $basename;
     private bool $active;
-    private string $username;
-    private string $repository;
-    private ?object $github_response = null;
-    private string $github_url;
+    private array $github_data;
+    private bool $cache_allowed;
 
     public function __construct($file) {
         $this->file = $file;
-        
-        // Carrega as funções de administração do plugin
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        
         $this->basename = plugin_basename($file);
+        
+        // Inclui o arquivo necessário para is_plugin_active
+        if (!function_exists('is_plugin_active')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+        
         $this->active = is_plugin_active($this->basename);
-        $this->username = 'alvobot';
-        $this->repository = 'alvobot-pre-article';
-        $this->github_url = 'https://api.github.com/repos/' . $this->username . '/' . $this->repository . '/releases/latest';
-        $this->plugin = get_plugin_data($this->file);
+        
+        // Define se podemos usar cache
+        $this->cache_allowed = (bool) apply_filters('alvobot_pre_article_allow_cache', true);
 
-        add_filter('pre_set_site_transient_update_plugins', [$this, 'modify_transient'], 10, 1);
-        add_filter('plugins_api', [$this, 'plugin_popup'], 10, 3);
-        add_filter('upgrader_post_install', [$this, 'after_install'], 10, 3);
+        add_filter('pre_set_site_transient_update_plugins', array($this, 'check_update'));
+        add_filter('plugins_api', array($this, 'plugins_api_filter'), 10, 3);
     }
 
-    private function get_repository_info() {
-        if ($this->github_response !== null) {
-            return;
-        }
-
-        $response = wp_remote_get($this->github_url, [
-            'headers' => [
-                'Accept' => 'application/vnd.github.v3+json'
-            ]
-        ]);
-
-        if (is_wp_error($response)) {
-            return;
-        }
-
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body);
-
-        if (empty($data)) {
-            return;
-        }
-
-        // Verifica se a resposta contém os campos necessários
-        if (!isset($data->tag_name) || !isset($data->zipball_url)) {
-            return;
-        }
-
-        $this->github_response = $data;
-    }
-
-    public function modify_transient($transient) {
-        if (!is_object($transient)) {
-            $transient = new stdClass;
-        }
-
-        // Sempre inicializar checked se não existir
-        if (!isset($transient->checked)) {
-            $transient->checked = [];
-        }
-
-        $this->get_repository_info();
-
-        if ($this->github_response === null) {
+    public function check_update($transient) {
+        if (empty($transient->checked)) {
             return $transient;
         }
 
-        $current_version = $this->plugin['Version'] ?? '0.0.0';
-        $remote_version = ltrim($this->github_response->tag_name, 'v');
+        // Pega informações do GitHub
+        $remote_version = $this->get_remote_version();
+        if (!$remote_version) {
+            return $transient;
+        }
 
-        // Adiciona a versão atual ao checked
-        $transient->checked[$this->basename] = $current_version;
+        // Pega a versão atual do plugin
+        $plugin_data = get_plugin_data($this->file);
+        $current_version = $plugin_data['Version'];
 
-        if (version_compare($remote_version, $current_version, '>')) {
-            $plugin = [
-                'id' => $this->basename,
+        // Compara versões
+        if (version_compare($current_version, $remote_version, '<')) {
+            $plugin_info = array(
                 'slug' => dirname($this->basename),
                 'plugin' => $this->basename,
                 'new_version' => $remote_version,
-                'url' => $this->plugin['PluginURI'] ?? '',
-                'package' => $this->github_response->zipball_url,
-                'icons' => [],
-                'banners' => [],
-                'banners_rtl' => [],
-                'tested' => '6.4.2',
-                'requires' => '5.8',
-                'requires_php' => '7.4'
-            ];
-
-            $transient->response[$this->basename] = (object) $plugin;
-        } else {
-            // Se não houver atualização, remova da lista de respostas
-            unset($transient->response[$this->basename]);
+                'package' => $this->get_download_url($remote_version)
+            );
+            $transient->response[$this->basename] = (object) $plugin_info;
         }
 
         return $transient;
     }
 
-    public function plugin_popup($result, $action, $args) {
+    public function plugins_api_filter($result, $action, $args) {
         if ($action !== 'plugin_information') {
             return $result;
         }
@@ -116,67 +66,67 @@ class Alvobot_Pre_Article_Updater {
             return $result;
         }
 
-        $this->get_repository_info();
-
-        if ($this->github_response === null) {
+        $remote_data = $this->get_remote_data();
+        if (!$remote_data) {
             return $result;
         }
 
-        $plugin = [
-            'name'              => $this->plugin['Name'],
-            'slug'              => dirname($this->basename),
-            'plugin'            => $this->basename,
-            'version'           => ltrim($this->github_response->tag_name, 'v'),
-            'author'            => $this->plugin['Author'],
-            'author_profile'    => $this->plugin['AuthorURI'] ?? '',
-            'last_updated'      => $this->github_response->published_at,
-            'homepage'          => $this->plugin['PluginURI'] ?? '',
-            'short_description' => $this->plugin['Description'],
-            'sections'          => [
-                'Description'   => $this->plugin['Description'],
-                'Updates'       => $this->github_response->body ?? 'No update notes available.',
-                'Changelog'     => $this->get_changelog(),
-            ],
-            'download_link'     => $this->github_response->zipball_url,
-            'requires'          => '5.8',
-            'tested'            => '6.4.2',
-            'requires_php'      => '7.4',
-            'compatibility'     => [],
-            'rating'           => 0,
-            'num_ratings'      => 0,
-            'support_threads'  => 0,
-            'support_threads_resolved' => 0,
-            'active_installs'  => 0,
-            'downloaded'       => 0,
-            'last_updated'     => $this->github_response->published_at,
-            'added'            => $this->github_response->published_at,
-            'tags'            => []
-        ];
-
-        return (object) $plugin;
+        $plugin_data = get_plugin_data($this->file);
+        
+        return (object) array(
+            'name' => $plugin_data['Name'],
+            'slug' => $args->slug,
+            'version' => $remote_data['tag_name'],
+            'requires' => '5.8',
+            'requires_php' => '7.4',
+            'author' => $plugin_data['Author'],
+            'sections' => array(
+                'description' => $plugin_data['Description'],
+                'changelog' => $remote_data['body']
+            ),
+            'download_link' => $this->get_download_url($remote_data['tag_name'])
+        );
     }
 
-    private function get_changelog(): string {
-        $changelog_path = plugin_dir_path($this->file) . 'CHANGELOG.md';
-        
-        if (file_exists($changelog_path)) {
-            return file_get_contents($changelog_path);
+    private function get_remote_data() {
+        if ($this->cache_allowed) {
+            $cached = get_transient('alvobot_pre_article_github_data');
+            if ($cached) {
+                return $cached;
+            }
         }
+
+        $response = wp_remote_get('https://api.github.com/repos/alvobot/alvobot-pre-article/releases/latest');
         
-        return 'No changelog available.';
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        
+        if (empty($data)) {
+            return false;
+        }
+
+        if ($this->cache_allowed) {
+            set_transient('alvobot_pre_article_github_data', $data, 12 * HOUR_IN_SECONDS);
+        }
+
+        return $data;
     }
 
-    public function after_install($response, $hook_extra, $result) {
-        global $wp_filesystem;
-
-        $install_directory = plugin_dir_path($this->file);
-        $wp_filesystem->move($result['destination'], $install_directory);
-        $result['destination'] = $install_directory;
-
-        if ($this->active) {
-            activate_plugin($this->basename);
+    private function get_remote_version() {
+        $data = $this->get_remote_data();
+        if (!$data) {
+            return false;
         }
+        return ltrim($data['tag_name'], 'v');
+    }
 
-        return $result;
+    private function get_download_url($version) {
+        return sprintf(
+            'https://github.com/alvobot/alvobot-pre-article/archive/refs/tags/v%s.zip',
+            ltrim($version, 'v')
+        );
     }
 }
