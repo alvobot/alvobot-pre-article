@@ -8,6 +8,9 @@ declare(strict_types=1);
 class Alvobot_Pre_Article {
 
     public function run() {
+        // Carrega as traduções no momento correto
+        add_action('init', [$this, 'load_plugin_textdomain']);
+        
         // Registra as regras de reescrita de URL
         add_action('init', [$this, 'register_rewrite_rules']);
         // Adiciona a variável de query
@@ -35,18 +38,45 @@ class Alvobot_Pre_Article {
     }
 
     public function register_rewrite_rules() {
-        add_rewrite_rule('^pre/([^/]+)/?', 'index.php?pre_article=1&name=$matches[1]', 'top');
+        // Regra para URLs com categorias
+        add_rewrite_rule(
+            '^pre/(.+?)/?$',
+            'index.php?pre_article=1&pagename=$matches[1]',
+            'top'
+        );
+        
+        // Regra antiga mantida para compatibilidade
+        add_rewrite_rule(
+            '^pre/([^/]+)/?',
+            'index.php?pre_article=1&name=$matches[1]',
+            'top'
+        );
+        
+        // Força atualização das regras de reescrita
+        flush_rewrite_rules();
     }
 
     public function add_query_vars($vars) {
         $vars[] = 'pre_article';
+        $vars[] = 'pagename';
         return $vars;
     }
 
     public function modify_main_query($query) {
         if (!is_admin() && $query->is_main_query() && get_query_var('pre_article')) {
             $query->set('post_type', 'post');
-            $query->set('name', get_query_var('name'));
+            
+            // Verifica se temos um pagename (URL com categorias)
+            if (get_query_var('pagename')) {
+                $pagename = get_query_var('pagename');
+                // Remove 'pre/' do início se existir
+                $pagename = preg_replace('/^pre\//', '', $pagename);
+                $query->set('pagename', $pagename);
+            } else {
+                // Fallback para o comportamento antigo
+                $query->set('name', get_query_var('name'));
+            }
+            
             $query->set('posts_per_page', 1);
             $query->set('post_status', 'publish');
         }
@@ -56,6 +86,12 @@ class Alvobot_Pre_Article {
         if (get_query_var('pre_article')) {
             // Carrega o post atual
             $post = get_post();
+            
+            // Verifica se o post existe
+            if (!$post instanceof WP_Post) {
+                return $template;
+            }
+            
             // Verifica se o post usa configurações personalizadas
             $use_custom = get_post_meta($post->ID, '_alvobot_use_custom', true);
             if ($use_custom === '1') {
@@ -73,6 +109,7 @@ class Alvobot_Pre_Article {
                     ];
                 }
             }
+            
             // Disponibiliza as CTAs para o template
             set_query_var('alvobot_ctas', $ctas);
     
@@ -86,7 +123,6 @@ class Alvobot_Pre_Article {
             } else {
                 // Log para depuração
                 error_log('Template não encontrado: ' . $template_path);
-                // Opcionalmente, retornar um template padrão ou uma mensagem de erro
                 return $template;
             }
         }
@@ -198,6 +234,24 @@ class Alvobot_Pre_Article {
                     </div>
                 </div>
 
+                <div class="card">
+                    <h2><?php _e('Configurações do Rodapé', 'alvobot-pre-artigo'); ?></h2>
+                    <div class="footer-field">
+                        <label for="footer_text">
+                            <strong><?php _e('Texto do Rodapé:', 'alvobot-pre-artigo'); ?></strong>
+                        </label>
+                        <textarea 
+                            id="footer_text"
+                            name="alvobot_pre_artigo_options[footer_text]" 
+                            rows="10" 
+                            class="large-text code"
+                        ><?php echo esc_textarea($options['footer_text'] ?? ''); ?></textarea>
+                        <p class="description">
+                            <?php _e('Use {NOME DO SITE} como placeholder para o nome do site configurado no WordPress.', 'alvobot-pre-artigo'); ?>
+                        </p>
+                    </div>
+                </div>
+
                 <?php submit_button(); ?>
             </form>
         </div>
@@ -216,34 +270,35 @@ class Alvobot_Pre_Article {
         register_setting('alvobot_pre_artigo_settings', 'alvobot_pre_artigo_options', [$this, 'sanitize']);
     
         add_settings_section(
-            'alvobot_pre_artigo_section',
-            __('Configurações dos Botões de CTA', 'alvobot-pre-artigo'),
+            'alvobot_pre_artigo_cta_section',
+            __('Configurações dos Botões CTA', 'alvobot-pre-artigo'),
             null,
             'alvobot-pre-artigo'
         );
-    
+
         add_settings_field(
             'num_ctas',
             __('Quantidade de CTAs', 'alvobot-pre-artigo'),
             [$this, 'num_ctas_callback'],
             'alvobot-pre-artigo',
-            'alvobot_pre_artigo_section'
+            'alvobot_pre_artigo_cta_section'
         );
 
-        // Add new AdSense section
+        // Nova seção para o rodapé
         add_settings_section(
-            'alvobot_adsense_section',
-            __('Configurações do AdSense', 'alvobot-pre-artigo'),
+            'alvobot_pre_artigo_footer_section',
+            __('Configurações do Rodapé', 'alvobot-pre-artigo'),
             null,
             'alvobot-pre-artigo'
         );
 
+        // Campo para o texto do rodapé
         add_settings_field(
-            'adsense_code',
-            __('Código do AdSense', 'alvobot-pre-artigo'),
-            [$this, 'adsense_code_callback'],
+            'footer_text',
+            __('Texto do Rodapé', 'alvobot-pre-artigo'),
+            [$this, 'footer_text_callback'],
             'alvobot-pre-artigo',
-            'alvobot_adsense_section'
+            'alvobot_pre_artigo_footer_section'
         );
     }    
 
@@ -256,14 +311,23 @@ class Alvobot_Pre_Article {
         <?php
     }    
 
-    public function adsense_code_callback() {
+    public function footer_text_callback() {
         $options = get_option('alvobot_pre_artigo_options');
-        $adsense_code = $options['adsense_code'] ?? '';
+        $default_footer = 'Aviso Legal: As informações deste site são meramente informativas e não substituem orientação profissional. Os resultados apresentados são ilustrativos, sem garantia de sucesso específico. Somos um site independente, não afiliado a outras marcas, que preza pela privacidade do usuário e protege suas informações pessoais, utilizando apenas para comunicações relacionadas aos nossos serviços.';
+        
+        $footer_text = isset($options['footer_text']) ? $options['footer_text'] : $default_footer;
         ?>
-        <textarea name="alvobot_pre_artigo_options[adsense_code]" rows="5" cols="50" class="large-text"><?php echo esc_textarea($adsense_code); ?></textarea>
-        <p class="description"><?php _e('Cole aqui seu código do Google AdSense.', 'alvobot-pre-artigo'); ?></p>
+        <textarea 
+            id="footer_text" 
+            name="alvobot_pre_artigo_options[footer_text]" 
+            rows="10" 
+            class="large-text code"
+        ><?php echo esc_textarea($footer_text); ?></textarea>
+        <p class="description">
+            <?php _e('Use {NOME DO SITE} como placeholder para o nome do site configurado no WordPress.', 'alvobot-pre-artigo'); ?>
+        </p>
         <?php
-    }    
+    }
 
     public function sanitize($input) {
         $new_input = [];
@@ -285,6 +349,11 @@ class Alvobot_Pre_Article {
         // AdSense code sanitization
         if (isset($input['adsense_code'])) {
             $new_input['adsense_code'] = wp_kses_post($input['adsense_code']);
+        }
+
+        // Footer text sanitization
+        if (isset($input['footer_text'])) {
+            $new_input['footer_text'] = wp_kses_post($input['footer_text']);
         }
 
         return $new_input;
@@ -310,7 +379,23 @@ class Alvobot_Pre_Article {
         $num_ctas = get_post_meta($post->ID, '_alvobot_num_ctas', true);
         $ctas = get_post_meta($post->ID, '_alvobot_ctas', true);
 
+        // Gera a URL do pré-artigo
+        $pre_article_url = home_url('/pre/' . $post->post_name);
         ?>
+        <div class="pre-article-url">
+            <p>
+                <strong><?php _e('URL do Pré-Artigo:', 'alvobot-pre-artigo'); ?></strong><br>
+                <input 
+                    type="text" 
+                    value="<?php echo esc_url($pre_article_url); ?>" 
+                    class="widefat" 
+                    readonly 
+                    onclick="this.select();"
+                    style="margin: 5px 0; font-size: 12px; background: #f0f0f1;"
+                />
+            </p>
+        </div>
+        <hr style="margin: 15px 0;">
         <p>
             <label>
                 <input type="checkbox" name="alvobot_use_custom" value="1" <?php checked($use_custom, '1'); ?> />
@@ -687,6 +772,17 @@ class Alvobot_Pre_Article {
             'success' => true,
             'message' => 'CTAs atualizadas com sucesso'
         ]);
+    }
+
+    /**
+     * Carrega o domínio de texto do plugin
+     */
+    public function load_plugin_textdomain() {
+        load_plugin_textdomain(
+            'alvobot-pre-artigo',
+            false,
+            dirname(plugin_basename(ALVOBOT_PRE_ARTICLE_FILE)) . '/languages'
+        );
     }
 
     /**

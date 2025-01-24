@@ -22,18 +22,7 @@ body {
 
 /* Cabeçalho */
 .pre-article-header {
-    text-align: center;
-    padding: 20px 0;
-}
-
-.pre-article-header h1 {
-    font-size: 24px;
-    margin: 0;
-}
-
-.pre-article-header img {
-    max-width: 200px;
-    height: auto;
+    display: none;
 }
 
 /* Conteúdo */
@@ -41,7 +30,7 @@ body {
     flex: 1;
     margin: 0 auto;
     max-width: 800px;
-    padding: 20px;
+    padding: 1rem;
 }
 
 .pre-article-content h2 {
@@ -114,61 +103,66 @@ body {
 
 /* Rodapé */
 .pre-article-footer {
+    margin-top: 3rem;
+    padding: 2rem 1rem 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: #999;
     text-align: center;
-    font-size: 14px;
-    padding: 20px 0;
-    background-color: #f1f1f1;
-    border-top: 1px solid #ddd;
 }
 
 .pre-article-footer .footer-content {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 0 20px;
 }
 
-.pre-article-footer .copyright {
-    margin-bottom: 10px;
-    color: #333;
+.pre-article-footer .footer-section {
+    margin-bottom: 1.5rem;
 }
 
-.pre-article-footer .legal {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 15px;
+.pre-article-footer .footer-section:last-child {
+    margin-bottom: 0;
+}
+
+.pre-article-footer .legal-disclaimer {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.pre-article-footer .footer-links {
+    text-align: center;
+    margin: 1.5rem 0;
 }
 
 .pre-article-footer .footer-link {
-    color: var(--primary-color);
+    color: #999;
     text-decoration: none;
-    transition: color var(--transition-duration) var(--transition-ease);
+    font-size: 0.75rem;
+    transition: color 0.2s ease;
+    margin: 0 0.5rem;
 }
 
 .pre-article-footer .footer-link:hover {
+    color: #666;
     text-decoration: underline;
-    color: var(--primary-color-dark);
 }
 
-.footer-menu {
-    list-style: none;
-    padding: 0;
+.pre-article-footer .copyright-section {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.pre-article-footer .copyright {
     margin: 0;
-}
-
-.footer-menu li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-.footer-menu a {
-    text-decoration: none;
-    color: #000;
-    transition: color var(--transition-duration) var(--transition-ease);
-}
-
-.footer-menu a:hover {
-    text-decoration: underline;
-    color: var(--primary-color);
+    opacity: 0.8;
 }
 
 /* Responsividade */

@@ -139,118 +139,129 @@ $second_part = wpautop($second_part);
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php the_title(); ?> - <?php bloginfo('name'); ?></title>
+    <title><?php wp_title('|', true, 'right'); ?></title>
     <?php wp_head(); ?>
-    <meta name="robots" content="noindex">
 </head>
-<body <?php body_class(); ?>>
-    <div class="pre-article-wrapper">
-        <header class="pre-article-header">
-            <?php
-            if (has_custom_logo()) {
-                $logo = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
-                if ($logo) {
-                    echo '<img src="' . esc_url($logo[0]) . '" alt="' . esc_attr(get_bloginfo('name')) . '">';
-                }
-            } else {
-                echo '<h1>' . esc_html(get_bloginfo('name')) . '</h1>';
-            }
-            ?>
-        </header>
-
-        <div class="pre-article-content">
-            <h2><?php the_title(); ?></h2>
-            
-            <!-- Primeira parte do conteúdo -->
-            <div class="excerpt">
-                <?php 
-                // Remove qualquer HTML no final que possa causar quebra de linha
-                $first_part = preg_replace('/<\/p>\s*$/', '', $first_part);
-                // Remove espaços e pontuação final
-                $first_part = rtrim($first_part, " \n\r\t\v\x00.");
-                // Adiciona o continue na mesma linha
-                echo $first_part . ' <a href="' . esc_url(get_permalink()) . '" class="continue-reading">...continue</a>';
-                ?>
-            </div>
-
-            <!-- CTAs -->
-            <div class="cta-buttons">
-                <?php
-                if (!empty($ctas)) {
-                    foreach ($ctas as $index => $cta) {
-                        // Constrói a UTM
-                        $utm_params = [
-                            'utm_content' => sanitize_title($cta['text']) . '_cta_' . ($index + 1)
-                        ];
-                        
-                        // Adiciona os parâmetros UTM à URL
-                        $cta_url = add_query_arg($utm_params, esc_url($cta['link']));
-                        ?>
-                        <a href="<?php echo esc_url($cta_url); ?>" class="cta-button" style="background-color: <?php echo esc_attr($cta['color']); ?>;">
-                            <?php echo esc_html($cta['text']); ?>
-                        </a>
-                        <?php
-                    }
-                }
-                ?>
-            </div>
-
-            <!-- Segunda parte do conteúdo -->
-            <div class="excerpt-continuation">
-                <?php 
-                if (!empty($second_part)) {
+<body <?php body_class('pre-article-page'); ?>>
+    <?php wp_body_open(); ?>
+    
+    <div class="pre-article-container">
+        <main class="pre-article-content">
+            <div class="pre-article-text">
+                <h2><?php the_title(); ?></h2>
+                
+                <!-- Primeira parte do conteúdo -->
+                <div class="excerpt">
+                    <?php 
                     // Remove qualquer HTML no final que possa causar quebra de linha
-                    $second_part = preg_replace('/<\/p>\s*$/', '', $second_part);
+                    $first_part = preg_replace('/<\/p>\s*$/', '', $first_part);
                     // Remove espaços e pontuação final
-                    $second_part = rtrim($second_part, " \n\r\t\v\x00.");
+                    $first_part = rtrim($first_part, " \n\r\t\v\x00.");
+                    // Adiciona UTM ao link
+                    $continue_1_url = add_query_arg([
+                        'utm_content' => 'continue_1'
+                    ], get_permalink());
                     // Adiciona o continue na mesma linha
-                    echo $second_part . ' <a href="' . esc_url(get_permalink()) . '" class="continue-reading">...continue</a>';
-                }
-                ?>
+                    echo $first_part . ' <a href="' . esc_url($continue_1_url) . '" class="continue-reading">...continue</a>';
+                    ?>
+                </div>
+
+                <!-- CTAs -->
+                <div class="cta-buttons">
+                    <?php
+                    if (!empty($ctas)) {
+                        foreach ($ctas as $index => $cta) {
+                            // Constrói a UTM
+                            $utm_params = [
+                                'utm_content' => sanitize_title($cta['text']) . '_cta_' . ($index + 1)
+                            ];
+                            
+                            // Adiciona os parâmetros UTM à URL
+                            $cta_url = add_query_arg($utm_params, esc_url($cta['link']));
+                            ?>
+                            <a href="<?php echo esc_url($cta_url); ?>" class="cta-button" style="background-color: <?php echo esc_attr($cta['color']); ?>;">
+                                <?php echo esc_html($cta['text']); ?>
+                            </a>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+
+                <!-- Segunda parte do conteúdo -->
+                <div class="excerpt-continuation">
+                    <?php 
+                    if (!empty($second_part)) {
+                        // Remove qualquer HTML no final que possa causar quebra de linha
+                        $second_part = preg_replace('/<\/p>\s*$/', '', $second_part);
+                        // Remove espaços e pontuação final
+                        $second_part = rtrim($second_part, " \n\r\t\v\x00.");
+                        // Adiciona UTM ao link
+                        $continue_2_url = add_query_arg([
+                            'utm_content' => 'continue_2'
+                        ], get_permalink());
+                        // Adiciona o continue na mesma linha
+                        echo $second_part . ' <a href="' . esc_url($continue_2_url) . '" class="continue-reading">...continue</a>';
+                    }
+                    ?>
+                </div>
+
+                <!-- AdSense Block -->
+                <div class="adsense-block">
+                    <?php 
+                    $options = get_option('alvobot_pre_artigo_options');
+                    $adsense_code = $options['adsense_code'] ?? '';
+                    echo wp_kses_post($adsense_code);
+                    ?>
+                </div>
             </div>
 
-            <!-- AdSense Block -->
-            <div class="adsense-block">
-                <?php 
-                $options = get_option('alvobot_pre_artigo_options');
-                $adsense_code = $options['adsense_code'] ?? '';
-                echo wp_kses_post($adsense_code);
-                ?>
-            </div>
-        </div>
+            <footer class="pre-article-footer">
+                <div class="footer-content">
+                    <div class="footer-section disclaimer-section">
+                        <div class="legal-disclaimer">
+                            <?php
+                            $options = get_option('alvobot_pre_artigo_options');
+                            $default_footer = 'Aviso Legal: As informações deste site são meramente informativas e não substituem orientação profissional. Os resultados apresentados são ilustrativos, sem garantia de sucesso específico. Somos um site independente, não afiliado a outras marcas, que preza pela privacidade do usuário e protege suas informações pessoais, utilizando apenas para comunicações relacionadas aos nossos serviços.';
+                            
+                            $footer_text = $options['footer_text'] ?? $default_footer;
+                            
+                            // Substitui o nome do site
+                            $footer_text = str_replace('{NOME DO SITE}', get_bloginfo('name'), $footer_text);
+                            
+                            // Substitui "Política de Privacidade" por um link
+                            $privacy_url = get_privacy_policy_url();
+                            if ($privacy_url) {
+                                $footer_text = str_replace(
+                                    'Política de Privacidade',
+                                    '<a href="' . esc_url($privacy_url) . '" class="footer-link">Política de Privacidade</a>',
+                                    $footer_text
+                                );
+                            }
+                            
+                            echo wp_kses_post($footer_text);
+                            ?>
+                        </div>
+                    </div>
 
-        <footer class="pre-article-footer">
-            <div class="footer-content">
-                <div class="footer-section disclaimer-section">
-                    <div class="primary-disclaimer">
-                        <p><b><?php _e('Aviso Importante', 'alvobot-pre-artigo'); ?></b>: <?php _e('As informações disponíveis neste site são apenas para fins informativos e não substituem, em nenhuma hipótese, o parecer de qualquer profissional qualificado. Sempre consulte um profissional especializado da área relacionada antes de tomar qualquer decisão baseada em nosso conteúdo.', 'alvobot-pre-artigo'); ?>
+                    <div class="footer-section copyright-section">
+                        <div class="footer-links">
+                            <?php
+                            // Links padrão do rodapé
+                            $privacy_policy_url = get_privacy_policy_url();
+                            if ($privacy_policy_url) {
+                                echo '<a href="' . esc_url($privacy_policy_url) . '" class="footer-link">' . __('Política de Privacidade', 'alvobot-pre-artigo') . '</a>';
+                            }
+                            ?>
+                        </div>
+                        <p class="copyright">
+                            &copy; <?php echo date('Y'); ?> <?php echo esc_html(get_bloginfo('name')); ?>. 
+                            <?php _e('Todos os direitos reservados.', 'alvobot-pre-artigo'); ?>
                         </p>
                     </div>
-                    <div class="legal-notices">
-                        <div class="notice-block">
-                            <p><b><?php _e('Resultados e Responsabilidade', 'alvobot-pre-artigo'); ?></b>: <?php _e('Os resultados apresentados em nosso conteúdo são ilustrativos e não devem ser considerados como garantia de ganhos ou sucessos específicos. O sucesso depende de diversos fatores individuais, incluindo dedicação, contexto e implementação adequada.', 'alvobot-pre-artigo'); ?>
-                            </p>
-                        </div>
-                        <div class="notice-block">
-                        <p><b><?php _e('Identificação do Site', 'alvobot-pre-artigo'); ?></b>: <?php _e('Este é um site independente e não é afiliado, associado, autorizado, endossado ou de qualquer forma oficialmente conectado a outras marcas ou empresas mencionadas. Todas as marcas registradas pertencem a seus respectivos proprietários.', 'alvobot-pre-artigo'); ?>
-                            </p>
-                        </div>
-                        <div class="notice-block">
-                        <p><b><?php _e('Privacidade e Publicidade', 'alvobot-pre-artigo'); ?></b>: <?php _e('Este site pode conter links patrocinados e publicidade. Suas informações pessoais são protegidas e nunca serão compartilhadas com terceiros sem seu consentimento. Ao se cadastrar, você poderá receber comunicações relacionadas aos nossos serviços.', 'alvobot-pre-artigo'); ?>
-                                <a href="<?php echo esc_url(get_privacy_policy_url()); ?>" class="footer-link"><?php _e('Política de Privacidade', 'alvobot-pre-artigo'); ?></a>.
-                            </p>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="footer-section copyright-section">
-                    <p class="copyright">
-                        &copy; <?php echo date('Y'); ?> <?php echo esc_html(get_bloginfo('name')); ?>. 
-                        <?php _e('Todos os direitos reservados.', 'alvobot-pre-artigo'); ?>
-                    </p>
-                </div>
-            </div>
-        </footer>
+            </footer>
+        </main>
     </div>
     <?php wp_footer(); ?>
 </body>
